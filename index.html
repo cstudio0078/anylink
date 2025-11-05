@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shared Page</title>
+<!-- Favicon -->
+<link rel="icon" href="favicon.png" type="image/png">
+<style>
+body { font-family: Arial; text-align:center; background:#0d0d0d; color:#fff; }
+input, button { padding:10px; margin:5px; font-size:1rem; border-radius:5px; border:none; }
+button { cursor:pointer; background:#00ffaa; }
+button:hover { background:#00cc88; }
+iframe { width:90%; height:500px; border:3px solid #00ffaa; border-radius:10px; margin-top:20px; display:block; }
+#ownerSection { margin-top:30px; border-top:2px dashed #00ffaa; padding-top:20px; }
+</style>
+</head>
+<body>
+
+<h1 id="pageHeader">Shared Page</h1>
+
+<!-- Public Controls -->
+<input type="text" id="titleInput" placeholder="Enter page title" />
+<button onclick="changeTitle()">Change Title</button><br>
+
+<input type="text" id="urlInput" placeholder="Enter embed URL" />
+<button onclick="changeEmbed()">Embed Link</button><br>
+
+<button onclick="goFullscreen()">Go Fullscreen</button>
+
+<iframe id="embedFrame" src=""></iframe>
+
+<!-- Owner Panel -->
+<div id="ownerSection">
+<h2>🔒 Owner Panel</h2>
+<input type="password" id="ownerPass" placeholder="Enter 4-digit passcode" maxlength="4">
+<button onclick="unlockOwner()">Unlock Panel</button>
+
+<div id="ownerControls" style="display:none; margin-top:15px;">
+<button onclick="shutdownEmbed()">Shut Down Embed</button>
+<button onclick="resetPage()">Reset Title & Embed</button>
+<p id="ownerMessage"></p>
+</div>
+</div>
+
+<script>
+const pageHeader = document.getElementById("pageHeader");
+const iframe = document.getElementById("embedFrame");
+const correctPass = "0078";
+
+// PUBLIC FUNCTIONS
+function changeTitle() {
+  const newTitle = document.getElementById("titleInput").value.trim();
+  if(newTitle) {
+    document.title = newTitle;
+    pageHeader.textContent = newTitle;
+  }
+}
+
+function changeEmbed() {
+  const url = document.getElementById("urlInput").value.trim();
+  if(url.startsWith("http")) {
+    iframe.src = url;
+  } else {
+    alert("Enter a valid URL starting with http or https");
+  }
+}
+
+function goFullscreen() {
+  if(iframe.src) {
+    if(iframe.requestFullscreen) iframe.requestFullscreen();
+    else if(iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+  } else {
+    alert("Embed a link first!");
+  }
+}
+
+// OWNER PANEL
+function unlockOwner() {
+  const pass = document.getElementById("ownerPass").value;
+  const controls = document.getElementById("ownerControls");
+  const msg = document.getElementById("ownerMessage");
+  if(pass === correctPass){
+    controls.style.display = "block";
+    msg.textContent = "✅ Owner panel unlocked!";
+    msg.style.color = "#00ffaa";
+  } else {
+    msg.textContent = "❌ Incorrect passcode!";
+    msg.style.color = "#ff4444";
+  }
+}
+
+function shutdownEmbed() {
+  iframe.src = "";
+  document.getElementById("ownerMessage").textContent = "✅ Embed shut down!";
+}
+
+function resetPage() {
+  iframe.src = "";
+  document.title = "Shared Page";
+  pageHeader.textContent = "Shared Page";
+  document.getElementById("titleInput").value = "";
+  document.getElementById("urlInput").value = "";
+  document.getElementById("ownerMessage").textContent = "✅ Page reset!";
+}
+
+// DYNAMIC FAVICON FUNCTION (Optional)
+function changeFavicon(url) {
+  let link = document.querySelector("link[rel~='icon']");
+  if(!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  }
+  link.href = url;
+}
+
+// Example usage to dynamically change favicon:
+// changeFavicon("newfavicon.png");
+</script>
+
+</body>
+</html>
+
+
